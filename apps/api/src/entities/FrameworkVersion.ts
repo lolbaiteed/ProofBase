@@ -2,10 +2,12 @@ import {
   Entity,
   PrimaryKey,
   Property,
+  OneToMany,
   ManyToOne,
-  ManyToMany,
 } from "@mikro-orm/decorators/legacy";
 import { Framework } from "./Framework.js";
+import { Requirement } from "./Requirement.js";
+import { Collection } from "@mikro-orm/core";
 
 @Entity()
 export class FrameworkVersion {
@@ -21,6 +23,6 @@ export class FrameworkVersion {
   @Property({ type: "date" })
   publishedAt!: Date;
 
-  @ManyToMany(() => Requirenments)
-  requirenments!: Requirenments;
+  @OneToMany(() => Requirement, (requirement) => requirement.frameworkVersion)
+  requirenments = new Collection<Requirement>(this);
 }

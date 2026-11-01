@@ -7,6 +7,8 @@ import {
 } from "@mikro-orm/decorators/legacy";
 import { FrameworkVersion } from "./FrameworkVersion.js";
 import { Collection } from "@mikro-orm/core";
+import { Assessment } from "./Assessment.js";
+import { BaseEntity } from "./BaseEntity.js";
 
 export enum RequirementType {
   Clause = "clause",
@@ -14,7 +16,7 @@ export enum RequirementType {
 }
 
 @Entity()
-export class Requirement {
+export class Requirement extends BaseEntity {
   @ManyToOne(() => FrameworkVersion)
   frameworkVersion!: FrameworkVersion;
 
@@ -35,4 +37,7 @@ export class Requirement {
 
   @OneToMany(() => Requirement, (requirement) => requirement.parent)
   children = new Collection<Requirement>(this);
+
+  @OneToMany(() => Assessment, (assessment) => assessment.requirement)
+  assessment = new Collection<Assessment>(this);
 }

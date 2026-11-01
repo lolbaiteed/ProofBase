@@ -5,6 +5,7 @@ import {
   OneToMany,
 } from "@mikro-orm/decorators/legacy";
 import { FrameworkVersion } from "./FrameworkVersion.js";
+import { Collection } from "@mikro-orm/core";
 
 @Entity()
 export class Framework {
@@ -20,9 +21,6 @@ export class Framework {
   @Property({ type: "string", nullable: true })
   description?: string;
 
-  @OneToMany(
-    () => FrameworkVersion,
-    (frameworkVersion) => frameworkVersion.version,
-  )
-  version!: FrameworkVersion;
+  @OneToMany(() => FrameworkVersion, (version) => version.framework)
+  versions = new Collection<FrameworkVersion>(this);
 }

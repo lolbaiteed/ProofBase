@@ -8,6 +8,10 @@ import {
 import { Organization } from "./Organization.js";
 import { FrameworkVersion } from "./FrameworkVersion.js";
 import { User } from "./User.js";
+import { BaseEntity } from "./BaseEntity.js";
+import { AuditScope } from "./AuditScope.js";
+import { Assessment } from "./Assessment.js";
+import { Collection } from "@mikro-orm/core";
 
 export enum AuditStatus {
   Draft = "draft",
@@ -23,7 +27,7 @@ export enum AuditType {
 }
 
 @Entity()
-export class Audit {
+export class Audit extends BaseEntity {
   @ManyToOne(() => Organization)
   organization!: Organization;
 
@@ -34,7 +38,7 @@ export class Audit {
   name!: string;
 
   @Enum(() => AuditStatus)
-  status!: AuditStatus.Draft;
+  status!: AuditStatus;
 
   @Property({ type: "string", nullable: true })
   notes?: string;
@@ -51,9 +55,9 @@ export class Audit {
   @ManyToOne(() => User)
   leadAuditor!: User;
 
-  @OneToMany(() => AuditScope, (auditScope) => auditScope)
-  scopes!: AuditScope;
+  @OneToMany(() => AuditScope, (auditScope) => auditScope.audit)
+  scopes = new Collection<AuditScope>(this);
 
-  @OneToMany(() => Asessment, (assessment) => assessment)
-  assessment!: Assessment;
+  @OneToMany(() => Assessment, (assessment) => assessment.audit)
+  assessment = new Collection<Assessment>(this);
 }
