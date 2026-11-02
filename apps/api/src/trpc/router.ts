@@ -13,12 +13,13 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 export const appRouter = t.router({
-  healthcheck: t.procedure
+  healthcheck: publicProcedure 
     .meta({
       name: "Health check",
       docs: {
         description: "Checks whether the api is responding",
         tags: ["System"],
+        auth: false 
       },
     })
     .output(

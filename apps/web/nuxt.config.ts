@@ -3,7 +3,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@nuxtjs/i18n',
   ],
 
   devtools: {
@@ -16,6 +17,14 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:3001'
     }
+  },
+
+  i18n: {
+    locales: [
+      { code: 'en', language: 'en-Us'},
+      { code: 'ru', language: 'ru-Ru'},
+      { code: 'kk', language: 'kk-Kz'}
+    ]
   },
 
   routeRules: {
