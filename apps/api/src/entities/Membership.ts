@@ -1,4 +1,3 @@
-import { BaseEntity } from "@mikro-orm/core";
 import {
   Entity,
   Enum,
@@ -7,6 +6,7 @@ import {
 } from "@mikro-orm/decorators/legacy";
 import { Organization } from "./Organization.js";
 import { User } from "./User.js";
+import { BaseEntity } from "./BaseEntity.js";
 
 export enum MembershipRole {
   Owner = "owner",
@@ -35,6 +35,6 @@ export class Membership extends BaseEntity {
   @Enum(() => MembershipStatus)
   status!: MembershipStatus;
 
-  @Property({ type: "date" })
+  @Property({ type: "date", nullable: true })
   joinedAt?: Date;
 }

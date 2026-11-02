@@ -1,4 +1,3 @@
-import { BaseEntity } from "@mikro-orm/core";
 import {
   Entity,
   ManyToOne,
@@ -7,6 +6,7 @@ import {
 } from "@mikro-orm/decorators/legacy";
 import { Finding } from "./Finding.js";
 import { User } from "./User.js";
+import { BaseEntity } from "./BaseEntity.js";
 
 export enum CorrectiveActionStatus {
   Open = "open",
@@ -32,9 +32,9 @@ export class CorrectiveAction extends BaseEntity {
   @Enum(() => CorrectiveActionStatus)
   status!: CorrectiveActionStatus;
 
-  @Property({ type: "date" })
+  @Property({ type: "date", nullable: true })
   completedAt?: Date;
 
-  @Property({ type: "text" })
+  @Property({ type: "text", nullable: true })
   resolutionNotes?: string;
 }

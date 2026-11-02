@@ -1,4 +1,4 @@
-import { BaseEntity, JsonType } from "@mikro-orm/core";
+import { JsonType } from "@mikro-orm/core";
 import {
   Entity,
   Enum,
@@ -9,11 +9,12 @@ import { Organization } from "./Organization.js";
 import { Audit } from "./Audit.js";
 import { User } from "./User.js";
 import { UUID } from "crypto";
+import { BaseEntity } from "./BaseEntity.js";
 
 export enum ActivityAction {
-  EvidanceUploaded = "evidance_uploaded",
+  EvidenceUploaded = "evidence_uploaded",
   AssessmentUpdated = "assessment_updated",
-  FindindCreated = "finding_created",
+  FindingCreated = "finding_created",
 }
 
 @Entity()
@@ -21,10 +22,10 @@ export class Activity extends BaseEntity {
   @ManyToOne(() => Organization)
   organization!: Organization;
 
-  @ManyToOne(() => Audit)
+  @ManyToOne(() => Audit, { nullable: true })
   audit?: Audit;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   actor?: User;
 
   @Enum(() => ActivityAction)

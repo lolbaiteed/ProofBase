@@ -1,4 +1,4 @@
-import { BaseEntity, Collection } from "@mikro-orm/core";
+import { Collection } from "@mikro-orm/core";
 import {
   Entity,
   Property,
@@ -9,6 +9,7 @@ import {
 import { User } from "./User.js";
 import { CorrectiveAction } from "./CorrectiveAction.js";
 import { Assessment } from "./Assessment.js";
+import { BaseEntity } from "./BaseEntity.js";
 
 export enum FindingSeverity {
   Low = "low",
@@ -35,10 +36,10 @@ export class Finding extends BaseEntity {
   @Property({ type: "date" })
   identifiedAt!: Date;
 
-  @Property({ type: "date" })
+  @Property({ type: "date", nullable: true })
   closedAt?: Date;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   assignedTo?: User;
 
   @OneToMany(() => CorrectiveAction, (action) => action.finding)
@@ -50,6 +51,6 @@ export class Finding extends BaseEntity {
   @Property({ type: "string" })
   title!: string;
 
-  @Property({ type: "text" })
+  @Property({ type: "text" , nullable: true })
   description?: string;
 }

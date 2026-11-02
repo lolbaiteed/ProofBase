@@ -14,3 +14,4 @@ export * from "./Organization.js";
 export * from "./Requirement.js";
 export * from "./SoAEntry.js";
 export * from "./User.js";
+export * from "./Person.js";
