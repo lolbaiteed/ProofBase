@@ -21,10 +21,14 @@ export default defineNuxtConfig({
 
   i18n: {
     locales: [
-      { code: 'en', language: 'en-Us'},
-      { code: 'ru', language: 'ru-Ru'},
-      { code: 'kk', language: 'kk-Kz'}
-    ]
+      { code: 'en', language: 'en-Us', file: 'en.json' },
+      { code: 'ru', language: 'ru-Ru', file: 'ru.json' },
+      { code: 'kk', language: 'kk-Kz', file: 'kk.json' },
+    ],
+    defaultLocale: 'en',
+    vueI18n: './app/i18n/i18n.config.ts',
+    langDir: '../../../packages/i18n/locales',
+    strategy: 'no_prefix',
   },
 
   routeRules: {
