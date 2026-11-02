@@ -1,8 +1,16 @@
 import { initTRPC } from "@trpc/server";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import type { RouteMeta } from "trpc-docs-generator";
+import type { Context } from "./context.js";
 
-const t = initTRPC.meta<RouteMeta>().create();
+const t = initTRPC.context<Context>().meta<RouteMeta>().create();
+
+export const publicProcedure = t.procedure;
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
+  return next({ ctx: { ...ctx, user: ctx.user } });
+});
 
 export const appRouter = t.router({
   healthcheck: t.procedure

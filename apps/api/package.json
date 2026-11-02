@@ -6,11 +6,15 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "lint": "eslint .",
+    "test": "tsx --test src/auth/*.test.ts",
     "check-types": "tsc --noEmit -p tsconfig.json",
     "db:debug": "mikro-orm debug",
     "db:create-migration": "mikro-orm migration:create",
     "db:up": "mikro-orm migration:up",
-    "db:down": "mikro-orm migration:down"
+    "db:down": "mikro-orm migration:down",
+    "db:fresh": "mikro-orm migration:fresh",
+    "auth:provision": "tsx src/auth/provision-user.ts",
+    "auth:re-enroll": "tsx src/auth/re-enroll-user.ts"
   },
   "devDependencies": {
     "@mikro-orm/cli": "^7.2.5",
@@ -19,11 +23,14 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.5",
     "@fastify/cors": "^11.3.1",
+    "@fastify/rate-limit": "^11.2.1",
     "@mikro-orm/core": "^7.2.5",
     "@mikro-orm/decorators": "^7.2.5",
     "@mikro-orm/migrations": "^7.2.5",
     "@mikro-orm/postgresql": "^7.2.5",
+    "@simplewebauthn/server": "^14.0.3",
     "@trpc/server": "^11.22.1",
     "dotenv": "^18.0.9",
     "fastify": "^5.12.7",

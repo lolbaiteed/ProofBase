@@ -7,17 +7,17 @@ defineProps<{
 
 const colorMode = useColorMode()
 const appConfig = useAppConfig()
+const auth = useAuth()
 
 const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe', 'mauve', 'mist', 'olive']
 
-const user = ref({
-  name: 'Benjamin Canac',
+const user = computed(() => ({
+  name: auth.user.value ? `${auth.user.value.firstName} ${auth.user.value.lastName}` : 'Account',
   avatar: {
-    src: 'https://github.com/benjamincanac.png',
-    alt: 'Benjamin Canac'
+    alt: auth.user.value?.email ?? 'Account'
   }
-})
+}))
 
 const items = computed<DropdownMenuItem[][]>(() => ([[{
   type: 'label',
@@ -155,7 +155,10 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
   target: '_blank'
 }], [{
   label: 'Log out',
-  icon: 'i-lucide-log-out'
+  icon: 'i-lucide-log-out',
+  onSelect: () => {
+    void auth.logout()
+  }
 }]]))
 </script>
 

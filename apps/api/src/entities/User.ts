@@ -8,7 +8,7 @@ import { BaseEntity } from "./BaseEntity.js";
 import { Person } from "./Person.js";
 import { Organization } from "./Organization.js";
 
-@Entity()
+@Entity({ tableName: "app_user" })
 export class User extends BaseEntity {
   @Property({ type: "string", unique: true })
   email!: string;
