@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import type { RouteMeta } from "trpc-docs-generator";
 import type { Context } from "./context.js";
+import { Permission, roleHasPermission } from "../auth/authorization.js";
 
 const t = initTRPC.context<Context>().meta<RouteMeta>().create();
 
@@ -12,14 +13,36 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   return next({ ctx: { ...ctx, user: ctx.user } });
 });
 
+export const organizationProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (!ctx.membership) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Active organizaton membership required",
+    });
+  }
+  return next({ ctx: { ...ctx, membership: ctx.membership } });
+});
+
+export function permissionProcedure(permission: Permission) {
+  return organizationProcedure.use(({ ctx, next }) => {
+    if (!roleHasPermission(ctx.membership.role, permission)) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Insufficient role permissions",
+      });
+    }
+    return next();
+  });
+}
+
 export const appRouter = t.router({
-  healthcheck: publicProcedure 
+  healthcheck: publicProcedure
     .meta({
       name: "Health check",
       docs: {
         description: "Checks whether the api is responding",
         tags: ["System"],
-        auth: false 
+        auth: false,
       },
     })
     .output(
