@@ -1,4 +1,4 @@
-import { defineConfig } from "@mikro-orm/postgresql";
+import { defineConfig, LoadStrategy } from "@mikro-orm/postgresql";
 import { Migrator } from "@mikro-orm/migrations";
 import { getDatabaseUrl } from "./utils/env.js";
 import { ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
@@ -18,5 +18,8 @@ export default defineConfig({
     glob: "!(*.d).{js,ts}",
   },
 
-  debug: process.env.NODE_ENV !== "production",
+  loadStrategy: LoadStrategy.SELECT_IN,
+
+  debug: false,
+  allowGlobalContext: false,
 });
