@@ -21,4 +21,7 @@ export class User extends BaseEntity {
 
   @ManyToOne(() => Organization)
   organization!: Organization;
+
+  @Property({ type: "date", nullable: true })
+  nextKeyRefreshAt?: Date;
 }

@@ -16,11 +16,21 @@ import { AuthChallenge, AuthChallengeType } from "../entities/AuthChallenge.js";
 import { AuthSession } from "../entities/AuthSession.js";
 import { AuthenticatorCredential } from "../entities/AuthenticatorCredential.js";
 import { EnrollmentToken } from "../entities/EnrollmentToken.js";
-import { Membership, MembershipStatus } from "../entities/Membership.js";
+import {
+  Membership,
+  MembershipRole,
+  MembershipStatus,
+} from "../entities/Membership.js";
 import { User } from "../entities/User.js";
 import { getAuthConfig } from "./auth.config.js";
 import { hashPassword, verifyPassword } from "./password.js";
 import { orm } from "../utils/database.js";
+import { REPLServer } from "node:repl";
+import {
+  issueFreshEnrollment,
+  KEY_REFRESH_MS,
+  revokeExistingKEys,
+} from "./key-policy.js";
 
 const emailSchema = z.email();
 const passwordSchema = z.string().min(12).max(128);
@@ -341,7 +351,8 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
         allowCredentials: credentials.map((credential) => ({
           id: credential.credentialId,
           transports: credential.transports as
-            AuthenticatorTransport[] | undefined,
+            | AuthenticatorTransport[]
+            | undefined,
         })),
         userVerification: "required",
         timeout: 60_000,
@@ -433,7 +444,8 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
               publicKey: Buffer.from(lockedCredential.publicKey, "base64url"),
               counter: lockedCredential.counter,
               transports: lockedCredential.transports as
-                AuthenticatorTransport[] | undefined,
+                | AuthenticatorTransport[]
+                | undefined,
             },
             requireUserVerification: true,
           });
@@ -486,6 +498,83 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
       },
     });
   });
+
+  app.post(
+    "/auth/re-enroll",
+    { preHandler: originGuard },
+    async (request, reply) => {
+      const parsed = z
+        .object({
+          email: z.email(),
+          targetUserId: z.uuid().optional(),
+        })
+        .safeParse(request.body);
+
+      if (!parsed.success)
+        return reply.code(400).send({ error: "Invalid request" });
+
+      const em = orm.em.fork();
+      const currentUser = await getAuthenticatedUser(request);
+      if (!currentUser) return reply.code(401).send({ error: "Unauthorized" });
+
+      const targetUser = parsed.data.targetUserId
+        ? await em.findOne(
+            User,
+            { id: parsed.data.targetUserId },
+            { populate: ["organization"] },
+          )
+        : currentUser;
+      if (!targetUser) return reply.code(404).send({ error: "User not found" });
+
+      const membership = await em.findOne(Membership, {
+        user: currentUser.id,
+        organization: currentUser.organization.id,
+        status: MembershipStatus.Active,
+      });
+
+      const isAdmin =
+        membership &&
+        (membership.role === MembershipRole.Admin ||
+          membership.role === MembershipRole.Owner);
+
+      if (parsed.data.targetUserId && !isAdmin) {
+        return reply.code(403).send({ error: "Admin role required" });
+      }
+
+      if (
+        parsed.data.targetUserId &&
+        targetUser.organization.id !== currentUser.organization.id
+      ) {
+        return reply
+          .code(403)
+          .send({ error: "Cross-organization key rotation forbidden" });
+      }
+
+      const emailMatches =
+        targetUser.email === parsed.data.email.trim().toLowerCase();
+      if (!emailMatches)
+        return reply.code(401).send({ error: "User mismatch" });
+
+      const token = await em.transactional(async (tx) => {
+        const lockedUser = await tx.findOne(
+          User,
+          { id: targetUser.id },
+          { lockMode: LockMode.PESSIMISTIC_WRITE, populate: ["organization"] },
+        );
+
+        if (!lockedUser) throw new Error("User not found");
+
+        await revokeExistingKEys(tx, lockedUser.id);
+        return await issueFreshEnrollment(tx, lockedUser);
+      });
+
+      return reply.send({
+        message: "Re-enrollment started",
+        token,
+        expiresInMs: KEY_REFRESH_MS,
+      });
+    },
+  );
 
   app.post(
     "/auth/logout",
