@@ -298,6 +298,23 @@
           "enumItems": [],
           "mappedType": "uuid"
         },
+        "next_key_refresh_at": {
+          "name": "next_key_refresh_at",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "date"
+        },
         "organization_id": {
           "name": "organization_id",
           "type": "uuid",

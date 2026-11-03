@@ -10,20 +10,7 @@ import { User } from "./User.js";
 import { CorrectiveAction } from "./CorrectiveAction.js";
 import { Assessment } from "./Assessment.js";
 import { BaseEntity } from "./BaseEntity.js";
-
-export enum FindingSeverity {
-  Low = "low",
-  Medium = "medium",
-  High = "high",
-  Critical = "critical",
-}
-
-export enum FindingStatus {
-  Open = "open",
-  InProgress = "in_progress",
-  Resolved = "resolved",
-  Accepted = "accepted",
-}
+import { FindingSeverity, FindingStatus } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class Finding extends BaseEntity {
@@ -51,6 +38,6 @@ export class Finding extends BaseEntity {
   @Property({ type: "string" })
   title!: string;
 
-  @Property({ type: "text" , nullable: true })
+  @Property({ type: "text", nullable: true })
   description?: string;
 }

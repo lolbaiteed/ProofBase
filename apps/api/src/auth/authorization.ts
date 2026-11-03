@@ -1,16 +1,4 @@
-import { MembershipRole } from "../entities/Membership.js";
-
-export enum Permission {
-  ReadOrganization = "organization:read",
-  ManageOrganization = "organization:manage",
-  TransferOrganization = "organization:transfer-ownership",
-  ManageMemberships = "membership:manage",
-  ManageAudits = "audit:manage",
-  WriteSoA = "soa:write",
-  WriteAssessments = "assessment:write",
-  WriteFindings = "finding:write",
-  WriteEvidence = "evidence:write",
-}
+import { MembershipRole, Permission } from "@ProofBase/shared/enums.js";
 
 const rolePermissions: Record<MembershipRole, readonly Permission[]> = {
   [MembershipRole.Owner]: Object.values(Permission),

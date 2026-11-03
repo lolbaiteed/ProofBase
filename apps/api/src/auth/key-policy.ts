@@ -4,7 +4,7 @@ import { AuthChallenge } from "../entities/AuthChallenge.js";
 import { AuthSession } from "../entities/AuthSession.js";
 import { AuthenticatorCredential } from "../entities/AuthenticatorCredential.js";
 import { EnrollmentToken } from "../entities/EnrollmentToken.js";
-import { MembershipRole } from "../entities/Membership.js";
+import { MembershipRole } from "@ProofBase/shared/enums.js";
 import { User } from "../entities/User.js";
 import { orm } from "../utils/database.js";
 

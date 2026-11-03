@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "rootDir": "../../",
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@ProofBase/shared/*": ["../../packages/shared/*"],
+      "#ProofBase/shared/*": ["../../packages/shared/*"]
+    }
+  }
+}

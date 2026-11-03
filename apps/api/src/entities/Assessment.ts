@@ -11,14 +11,7 @@ import { Audit } from "./Audit.js";
 import { Requirement } from "./Requirement.js";
 import { Finding } from "./Finding.js";
 import { Collection } from "@mikro-orm/core";
-
-export enum AssessmentStatus {
-  NotAssessted = "not_assessted",
-  Compliant = "compliant",
-  PartiallyCompliant = "partially_compliant",
-  NonCompliant = "non_compliant",
-  NotApplicable = "not_applicable",
-}
+import { AssessmentStatus } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class Assessment extends BaseEntity {

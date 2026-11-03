@@ -8,13 +8,7 @@ import { BaseEntity } from "./BaseEntity.js";
 import { Requirement } from "./Requirement.js";
 import { User } from "./User.js";
 import { Organization } from "./Organization.js";
-
-export enum ImplementationStatus {
-  NotImplemented = "not_implemented",
-  Planned = "planned",
-  PartiallyImplemented = "partially_implemented",
-  Implemented = "implemented",
-}
+import { ImplementationStatus } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class SoAEntry extends BaseEntity {

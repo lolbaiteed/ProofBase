@@ -10,12 +10,7 @@ import { Audit } from "./Audit.js";
 import { User } from "./User.js";
 import { UUID } from "crypto";
 import { BaseEntity } from "./BaseEntity.js";
-
-export enum ActivityAction {
-  EvidenceUploaded = "evidence_uploaded",
-  AssessmentUpdated = "assessment_updated",
-  FindingCreated = "finding_created",
-}
+import { ActivityAction } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class Activity extends BaseEntity {

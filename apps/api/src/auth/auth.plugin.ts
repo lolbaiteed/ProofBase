@@ -12,20 +12,21 @@ import { createHash, randomBytes } from "node:crypto";
 import { LockMode } from "@mikro-orm/core";
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { AuthChallenge, AuthChallengeType } from "../entities/AuthChallenge.js";
+import { AuthChallenge } from "../entities/AuthChallenge.js";
 import { AuthSession } from "../entities/AuthSession.js";
 import { AuthenticatorCredential } from "../entities/AuthenticatorCredential.js";
 import { EnrollmentToken } from "../entities/EnrollmentToken.js";
 import {
-  Membership,
   MembershipRole,
   MembershipStatus,
-} from "../entities/Membership.js";
+  AuthChallengeType,
+} from "@ProofBase/shared/enums.js";
+import { uuidIdSchema } from "@ProofBase/shared/types.js";
+import { Membership } from "../entities/Membership.js";
 import { User } from "../entities/User.js";
 import { getAuthConfig } from "./auth.config.js";
 import { hashPassword, verifyPassword } from "./password.js";
 import { orm } from "../utils/database.js";
-import { REPLServer } from "node:repl";
 import {
   issueFreshEnrollment,
   KEY_REFRESH_MS,
@@ -351,8 +352,7 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
         allowCredentials: credentials.map((credential) => ({
           id: credential.credentialId,
           transports: credential.transports as
-            | AuthenticatorTransport[]
-            | undefined,
+            AuthenticatorTransport[] | undefined,
         })),
         userVerification: "required",
         timeout: 60_000,
@@ -444,8 +444,7 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
               publicKey: Buffer.from(lockedCredential.publicKey, "base64url"),
               counter: lockedCredential.counter,
               transports: lockedCredential.transports as
-                | AuthenticatorTransport[]
-                | undefined,
+                AuthenticatorTransport[] | undefined,
             },
             requireUserVerification: true,
           });
@@ -506,7 +505,7 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
       const parsed = z
         .object({
           email: z.email(),
-          targetUserId: z.uuid().optional(),
+          targetUserId: uuidIdSchema,
         })
         .safeParse(request.body);
 

@@ -12,19 +12,7 @@ import { BaseEntity } from "./BaseEntity.js";
 import { AuditScope } from "./AuditScope.js";
 import { Assessment } from "./Assessment.js";
 import { Collection } from "@mikro-orm/core";
-
-export enum AuditStatus {
-  Draft = "draft",
-  InProgress = "in_progress",
-  UnderReview = "under_review",
-  Completed = "completed",
-}
-
-export enum AuditType {
-  Internal = "internal",
-  External = "external",
-  Other = "other",
-}
+import { AuditType, AuditStatus } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class Audit extends BaseEntity {

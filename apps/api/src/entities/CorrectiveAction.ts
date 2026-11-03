@@ -7,13 +7,7 @@ import {
 import { Finding } from "./Finding.js";
 import { User } from "./User.js";
 import { BaseEntity } from "./BaseEntity.js";
-
-export enum CorrectiveActionStatus {
-  Open = "open",
-  InProgress = "in_progress",
-  Completed = "completed",
-  Cancelled = "cancelled",
-}
+import { CorrectiveActionStatus } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class CorrectiveAction extends BaseEntity {

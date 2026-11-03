@@ -1,7 +1,8 @@
 import type { CreateFastifyContextOptions } from "@trpc/server/adapters/fastify";
 import { orm } from "../utils/database.js";
 import { getAuthenticatedUser } from "../auth/auth.plugin.js";
-import { Membership, MembershipStatus } from "../entities/Membership.js";
+import { Membership } from "../entities/Membership.js";
+import { MembershipStatus } from "@ProofBase/shared/enums.js";
 
 export async function createContext({ req }: CreateFastifyContextOptions) {
   const user = await getAuthenticatedUser(req);

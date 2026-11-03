@@ -1,12 +1,13 @@
-import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/decorators/legacy";
+import {
+  Entity,
+  Enum,
+  ManyToOne,
+  Property,
+} from "@mikro-orm/decorators/legacy";
 import { BaseEntity } from "./BaseEntity.js";
 import { User } from "./User.js";
 import { EnrollmentToken } from "./EnrollmentToken.js";
-
-export enum AuthChallengeType {
-  Login = "login",
-  Enrollment = "enrollment",
-}
+import { AuthChallengeType } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class AuthChallenge extends BaseEntity {

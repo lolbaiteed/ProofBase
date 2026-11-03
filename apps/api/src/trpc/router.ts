@@ -3,23 +3,24 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import type { RouteMeta } from "trpc-docs-generator";
 import type { Context } from "./context.js";
-import { Permission, roleHasPermission } from "../auth/authorization.js";
-import { Audit, AuditStatus } from "../entities/Audit.js";
+import { roleHasPermission } from "../auth/authorization.js";
+import { Audit } from "../entities/Audit.js";
 import { FrameworkVersion } from "../entities/FrameworkVersion.js";
 import { User } from "../entities/User.js";
-import { ImplementationStatus, SoAEntry } from "../entities/SoAEntry.js";
-import { MembershipRole } from "../entities/Membership.js";
-import { Assessment, AssessmentStatus } from "../entities/Assessment.js";
+import { SoAEntry } from "../entities/SoAEntry.js";
+import { Assessment } from "../entities/Assessment.js";
+import { Finding } from "../entities/Finding.js";
 import {
-  Finding,
+  Permission,
   FindingSeverity,
   FindingStatus,
-} from "../entities/Finding.js";
+  ImplementationStatus,
+  AssessmentStatus,
+  AuditStatus,
+  MembershipRole,
+} from "@ProofBase/shared/enums.js";
+import { uuidIdSchema } from "@ProofBase/shared/types.js";
 import { Evidence } from "../entities/Evidence.js";
-
-const uuidIdSchema = z
-  .string()
-  .uuid() as z.ZodType<`${string}-${string}-${string}-${string}-${string}`>;
 
 const t = initTRPC.context<Context>().meta<RouteMeta>().create();
 
@@ -116,11 +117,11 @@ export const appRouter = t.router({
       const audit = new Audit();
       audit.organization = ctx.membership.organization;
       audit.name = input.name;
-      audit.frameworkVersion = await ctx.em.getReference(
+      audit.frameworkVersion = ctx.em.getReference(
         FrameworkVersion,
         input.frameworkVersionId,
       );
-      audit.leadAuditor = await ctx.em.getReference(User, input.leadAuditorId);
+      audit.leadAuditor = ctx.em.getReference(User, input.leadAuditorId);
       audit.startDate = input.startDate;
       audit.dueDate = input.dueDate;
       audit.status = AuditStatus.Draft;

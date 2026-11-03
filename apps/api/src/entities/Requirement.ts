@@ -9,11 +9,7 @@ import { FrameworkVersion } from "./FrameworkVersion.js";
 import { Collection } from "@mikro-orm/core";
 import { Assessment } from "./Assessment.js";
 import { BaseEntity } from "./BaseEntity.js";
-
-export enum RequirementType {
-  Clause = "clause",
-  Control = "control",
-}
+import { RequirementType } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class Requirement extends BaseEntity {

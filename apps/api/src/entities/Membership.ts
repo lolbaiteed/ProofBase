@@ -7,19 +7,7 @@ import {
 import { Organization } from "./Organization.js";
 import { User } from "./User.js";
 import { BaseEntity } from "./BaseEntity.js";
-
-export enum MembershipRole {
-  Owner = "owner",
-  Admin = "admin",
-  Auditor = "auditor",
-  Contributor = "contributor",
-  Viewer = "viewer",
-}
-
-export enum MembershipStatus {
-  Active = "active",
-  Invited = "invited",
-}
+import { MembershipRole, MembershipStatus } from "@ProofBase/shared/enums.js";
 
 @Entity()
 export class Membership extends BaseEntity {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { Permission, roleHasPermission } from "./authorization.js";
-import { MembershipRole } from "../entities/Membership.js";
+import { MembershipRole } from "@ProofBase/shared/enums.js";
 
 test("owner has every permission", () => {
   for (const permission of Object.values(Permission)) {
