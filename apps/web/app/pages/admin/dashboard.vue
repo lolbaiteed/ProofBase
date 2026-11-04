@@ -4,7 +4,7 @@ import {
 	FindingSeverity,
 	FindingStatus,
 	ImplementationStatus
-} from '../../../../../packages/shared/enums'
+} from '@ProofBase/shared/enums'
 
 type Assessment = { id: string, status: AssessmentStatus }
 type Audit = { id: string, name: string }
