@@ -1,25 +1,6 @@
-// login flow guard
-async function getSession(request: FastifyRequest): Promise<AuthenticatedSession | null> {
-const auth = getAuthConfig();
-const token = request.cookies?.[auth.cookieName];
-if (!token) return null;
 
-const session = await orm.em.findOne(
-AuthSession,
-{
-tokenHash: hashToken(token),
-revokedAt: null,
-expiresAt: { $gt: new Date() },
-},
-{ populate: ["user", "user.person", "user.organization"] },
-);
-
-if (!session?.user) return null;
-if (isKeyRefreshRequired(session.user)) return null;
-
-return session as AuthenticatedSession;
-}
-
-// after successful WebAuthn registration / re-enroll
-const lock = await tx.findOne(User, { id: user.id }, { lockMode: LockMode.PESSIMISTIC_WRITE });
-lock.nextKeyRefreshAt = nextRefreshAt();
+• Admin: Add organization-wide audit and control metrics, overdue remediation, and links to affected records.
+• Auditor: Add assigned review queue, evidence decisions, audit scope, and finding actions.
+• Contributor: Add tasks assigned to current user, evidence upload links, and review feedback.
+• Owner: Add executive-level risk trends, critical escalations, and decision links.
+• Viewer: Add read-only reports and policy links, with clear data freshness.

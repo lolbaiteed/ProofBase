@@ -1,48 +1,56 @@
+import { MembershipRole } from "@ProofBase/shared";
+
 export interface AuthenticatedUser {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  organizationId: string
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  organizationId: string;
+  role: MembershipRole;
 }
 
 export function useAuth() {
-  const user = useState<AuthenticatedUser | null>('proofbase.auth.user', () => null)
-  const loaded = useState('proofbase.auth.loaded', () => false)
-  const config = useRuntimeConfig()
+  const user = useState<AuthenticatedUser | null>(
+    "proofbase.auth.user",
+    () => null,
+  );
+  const loaded = useState("proofbase.auth.loaded", () => false);
+  const config = useRuntimeConfig();
 
   async function fetchCurrentUser(): Promise<AuthenticatedUser> {
-    const cookieHeader = import.meta.server ? useRequestHeaders(['cookie']).cookie : undefined
+    const cookieHeader = import.meta.server
+      ? useRequestHeaders(["cookie"]).cookie
+      : undefined;
     const sessionCookie = cookieHeader
-      ?.split(';')
-      .map(value => value.trim())
-      .find(value => value.startsWith('proofbase_session='))
+      ?.split(";")
+      .map((value) => value.trim())
+      .find((value) => value.startsWith("proofbase_session="));
     try {
-      const response = await $fetch<{ user: AuthenticatedUser }>('/auth/me', {
+      const response = await $fetch<{ user: AuthenticatedUser }>("/auth/me", {
         baseURL: config.public.apiBase,
-        credentials: 'include',
-        headers: sessionCookie ? { cookie: sessionCookie } : undefined
-      })
-      user.value = response.user
-      loaded.value = true
-      return response.user
+        credentials: "include",
+        headers: sessionCookie ? { cookie: sessionCookie } : undefined,
+      });
+      user.value = response.user;
+      loaded.value = true;
+      return response.user;
     } catch (error) {
-      user.value = null
-      loaded.value = true
-      throw error
+      user.value = null;
+      loaded.value = true;
+      throw error;
     }
   }
 
   async function logout(): Promise<void> {
-    await $fetch('/auth/logout', {
+    await $fetch("/auth/logout", {
       baseURL: config.public.apiBase,
-      method: 'POST',
-      credentials: 'include'
-    })
-    user.value = null
-    loaded.value = false
-    await navigateTo('/login')
+      method: "POST",
+      credentials: "include",
+    });
+    user.value = null;
+    loaded.value = false;
+    await navigateTo("/login");
   }
 
-  return { user, loaded, fetchCurrentUser, logout }
+  return { user, loaded, fetchCurrentUser, logout };
 }

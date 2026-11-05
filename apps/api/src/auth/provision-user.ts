@@ -7,18 +7,25 @@ import { Person } from "../entities/Person.js";
 import { User } from "../entities/User.js";
 import { orm } from "../utils/database.js";
 
-const [emailArg, firstName, lastName, organizationName, organizationCode] =
-  process.argv.slice(2);
+const [
+  emailArg,
+  firstName,
+  lastName,
+  role,
+  organizationName,
+  organizationCode,
+] = process.argv.slice(2);
 
 if (
   !emailArg ||
   !firstName ||
   !lastName ||
+  !role ||
   !organizationName ||
   !organizationCode
 ) {
   console.error(
-    "Usage: npm run auth:provision -w @ProofBase/api -- <email> <first-name> <last-name> <organization-name> <organization-code>",
+    "Usage: npm run auth:provision -w @ProofBase/api -- <email> <first-name> <last-name> <role> <organization-name> <organization-code>",
   );
   process.exitCode = 1;
 } else {
@@ -31,6 +38,10 @@ if (
     });
     if (existingUser || existingOrganization) {
       throw new Error("Email or organization code already exists");
+    }
+
+    if (!Object.values(MembershipRole).includes(role as MembershipRole)) {
+      throw new Error("Role does not exists");
     }
 
     const organization = new Organization();
@@ -50,7 +61,7 @@ if (
     const membership = new Membership();
     membership.organization = organization;
     membership.user = user;
-    membership.role = MembershipRole.Owner;
+    membership.role = role as MembershipRole;
     membership.status = MembershipStatus.Active;
 
     const token = randomBytes(32).toString("base64url");

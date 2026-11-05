@@ -1,58 +1,76 @@
 <script setup lang="ts">
-import { startAuthentication } from '@simplewebauthn/browser'
-import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser'
+import { startAuthentication } from "@simplewebauthn/browser";
+import type { PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/browser";
 
-definePageMeta({ layout: false })
-useHead({ title: 'Sign in · ProofBase' })
+definePageMeta({ layout: false });
+useHead({ title: "Sign in · ProofBase" });
 
-const config = useRuntimeConfig()
-const route = useRoute()
-const auth = useAuth()
-const email = ref('')
-const password = ref('')
-const errorMessage = ref('')
-const pending = ref(false)
+const config = useRuntimeConfig();
+const route = useRoute();
+const auth = useAuth();
+const email = ref("");
+const password = ref("");
+const errorMessage = ref("");
+const pending = ref(false);
 
 function errorText(error: unknown): string {
-  const apiError = (error as { data?: { error?: string } })?.data?.error
-  return apiError ?? (error instanceof Error ? error.message : 'Sign-in failed. Try again.')
+  const apiError = (error as { data?: { error?: string } })?.data?.error;
+  return (
+    apiError ??
+    (error instanceof Error ? error.message : "Sign-in failed. Try again.")
+  );
 }
 
 async function signIn() {
-  pending.value = true
-  errorMessage.value = ''
+  pending.value = true;
+  errorMessage.value = "";
   try {
-    const started = await $fetch<{ challengeId: string, options: PublicKeyCredentialRequestOptionsJSON }>('/auth/login/options', {
+    const started = await $fetch<{
+      challengeId: string;
+      options: PublicKeyCredentialRequestOptionsJSON;
+    }>("/auth/login/options", {
       baseURL: config.public.apiBase,
-      method: 'POST',
-      credentials: 'include',
-      body: { email: email.value, password: password.value }
-    })
-    const response = await startAuthentication({ optionsJSON: started.options })
-    await $fetch('/auth/login/verify', {
+      method: "POST",
+      credentials: "include",
+      body: { email: email.value, password: password.value },
+    });
+    const response = await startAuthentication({
+      optionsJSON: started.options,
+    });
+    await $fetch("/auth/login/verify", {
       baseURL: config.public.apiBase,
-      method: 'POST',
-      credentials: 'include',
-      body: { challengeId: started.challengeId, response }
-    })
-    await auth.fetchCurrentUser()
+      method: "POST",
+      credentials: "include",
+      body: { challengeId: started.challengeId, response },
+    });
+    const user = await auth.fetchCurrentUser();
+    const dashboard = user.role ? `/${user.role}/dashboard` : "/";
+    console.log(dashboard);
 
-    const requested = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
-    const destination = requested.startsWith('/') && !requested.startsWith('//') ? requested : '/'
-    await navigateTo(destination)
+    const requested =
+      typeof route.query.redirect === "string" ? route.query.redirect : null;
+    const destination =
+      requested && requested.startsWith("/") && !requested.startsWith("//")
+        ? requested
+        : dashboard;
+    await navigateTo(destination);
   } catch (error) {
-    errorMessage.value = errorText(error)
+    errorMessage.value = errorText(error);
   } finally {
-    pending.value = false
+    pending.value = false;
   }
 }
 </script>
 
 <template>
-  <main class="min-h-screen flex items-center justify-center bg-elevated/30 px-4 py-12">
+  <main
+    class="min-h-screen flex items-center justify-center bg-elevated/30 px-4 py-12"
+  >
     <UCard class="w-full max-w-md shadow-xl shadow-black/5">
       <div class="mb-8 text-center">
-        <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-primary text-white">
+        <div
+          class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-primary text-white"
+        >
           <UIcon name="i-lucide-shield-check" class="size-6" />
         </div>
         <h1 class="text-2xl font-semibold tracking-tight">
@@ -90,19 +108,16 @@ async function signIn() {
           :description="errorMessage"
         />
 
-        <UButton
-          type="submit"
-          block
-          size="lg"
-          :loading="pending"
-        >
+        <UButton type="submit" block size="lg" :loading="pending">
           Continue with security key
         </UButton>
       </form>
 
       <p class="mt-6 text-center text-sm text-muted">
         Need to activate an account?
-        <NuxtLink to="/setup" class="font-medium text-primary hover:underline">Use your admin enrollment token</NuxtLink>
+        <NuxtLink to="/setup" class="font-medium text-primary hover:underline"
+          >Use your admin enrollment token</NuxtLink
+        >
       </p>
     </UCard>
   </main>
